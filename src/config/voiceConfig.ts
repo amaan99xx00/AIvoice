@@ -82,7 +82,7 @@ export const VOICE_CONFIG = {
   // 5A.3: Barge-in / Interruption handling
   bargeIn: {
     enabled: true,
-    interruptionThreshold: 0.035, // Slightly higher than normal VAD to account for acoustic bleed
+    interruptionThreshold: 0.045, // Responds to human speech while filtering low-level bleed
     minInterruptionDurationMs: 100 // Rapid interruption cutoff
   } as BargeInConfig,
 

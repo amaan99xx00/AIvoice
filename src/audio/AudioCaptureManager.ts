@@ -110,14 +110,12 @@ export class AudioCaptureManager {
     // 5A.1: Construct browser-recommended audio constraints
     const idealConstraints: MediaStreamConstraints = {
       audio: {
-        echoCancellation: { ideal: VOICE_CONFIG.audioConstraints.echoCancellation },
-        noiseSuppression: { ideal: VOICE_CONFIG.audioConstraints.noiseSuppression },
-        autoGainControl: { ideal: VOICE_CONFIG.audioConstraints.autoGainControl },
-        channelCount: { ideal: VOICE_CONFIG.audioConstraints.channelCount },
-        sampleRate: { ideal: VOICE_CONFIG.audioConstraints.sampleRate },
-        ...(selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : {}),
-        ...({ latency: { ideal: VOICE_CONFIG.audioConstraints.latency } } as Record<string, unknown>)
-      } as MediaTrackConstraints,
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        channelCount: 1,
+        ...(selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : {})
+      },
       video: false
     };
 

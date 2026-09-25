@@ -58,6 +58,7 @@ export class VoiceSessionController {
         this.echoManager.setAiSpeakingState(false);
         if (this.isSessionActive && !this.captureManager.isMuted()) {
           this.stateMachine.transition('LISTENING');
+          this.voiceConsole.setGreeting("I'm listening...", "Speak in English, Hindi, or Hinglish");
         }
       }
     });
@@ -82,17 +83,20 @@ export class VoiceSessionController {
     // 4. Voice Activity Detector (Section 2, 6, 9)
     this.vad = new VoiceActivityDetector({
       onSpeechStart: () => {
-        // Section 6: If customer starts speaking while AI speaks, halt TTS immediately!
+        // Do not trigger user speaking if AI is speaking (echo filter handles barge-in)
         if (this.bargeInManager.getIsAiSpeaking()) {
-          this.bargeInManager.triggerBargeIn('voice_detected');
+          return;
         }
-        if (!this.captureManager.isMuted()) {
+        if (!this.captureManager.isMuted() && this.isSessionActive) {
           this.stateMachine.transition('USER_SPEAKING');
         }
       },
       onSpeechEnd: (_durationMs) => {
-        if (this.isSessionActive && !this.captureManager.isMuted()) {
-          this.stateMachine.transition('THINKING');
+        // Only transition to THINKING if we were in USER_SPEAKING
+        if (this.isSessionActive && !this.captureManager.isMuted() && !this.bargeInManager.getIsAiSpeaking()) {
+          if (this.stateMachine.getState() === 'USER_SPEAKING') {
+            this.stateMachine.transition('THINKING');
+          }
         }
       },
       onVolumeChange: (rms, peak) => {
@@ -105,13 +109,19 @@ export class VoiceSessionController {
     this.speechEngine = new WebSpeechFallback(this.bargeInManager, {
       onTranscript: (text, isFinal) => {
         if (!isFinal) {
-          this.voiceConsole.setGreeting(text, 'Listening to you...');
+          this.stateMachine.transition('USER_SPEAKING');
+          this.voiceConsole.setGreeting(`"${text}"`, 'Hearing your voice...');
         } else {
           this.handleCustomerUtterance(text);
         }
       },
+      onSpeechDetected: () => {
+        if (this.isSessionActive && !this.bargeInManager.getIsAiSpeaking()) {
+          this.stateMachine.transition('USER_SPEAKING');
+        }
+      },
       onError: (err) => {
-        console.error('Speech engine error:', err);
+        console.warn('Speech engine warning:', err);
       }
     });
 
