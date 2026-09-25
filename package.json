@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "npx tsx scripts/runTests.ts"
+    "test": "npx tsx scripts/runTests.ts && npx tsx scripts/testFrontendVoiceUx.ts"
   },
   "keywords": ["voice", "vapi", "vad", "webaudio", "barge-in", "echo-cancellation", "speech-recognition"],
   "author": "Antigravity",

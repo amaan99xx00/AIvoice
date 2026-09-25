@@ -1,0 +1,662 @@
+/*
+ * Premium Real-Time Voice Assistant & Storefront Stylesheet
+ * Implements Section 2, 4, 28 (Mobile), and 29 (Visual Design).
+ */
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Modern clean neutral palette with subtle cyan/emerald accents */
+  --bg-store: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --border-light: #e2e8f0;
+  --border-focus: #0284c7;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  --primary-brand: #0284c7;
+  --primary-hover: #0369a1;
+  --emerald-accent: #10b981;
+  --amber-accent: #f59e0b;
+  --rose-accent: #f43f5e;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-floating: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --shadow-orb: 0 0 35px rgba(2, 132, 199, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-store);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Storefront Header & Layout
+   ========================================================================== */
+
+.store-header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 1rem 1.5rem;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.store-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--primary-brand);
+  text-decoration: none;
+}
+
+.store-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-badge {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: 0.35rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cart-button {
+  background: #f1f5f9;
+  border: 1px solid var(--border-light);
+  border-radius: 9999px;
+  padding: 0.4rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cart-button:hover {
+  background: #e2e8f0;
+}
+
+.cart-counter {
+  background: var(--primary-brand);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+}
+
+/* ==========================================================================
+   Storefront Products Section
+   ========================================================================== */
+
+.store-main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.hero-banner {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: white;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-banner h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-banner p {
+  font-size: 1.05rem;
+  opacity: 0.9;
+  max-width: 600px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.product-image {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.product-info {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-category {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--primary-brand);
+  margin-bottom: 0.25rem;
+}
+
+.product-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.product-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.product-variants-tags {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.variant-tag {
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-add-cart {
+  background: var(--primary-brand);
+  color: white;
+  border: none;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-add-cart:hover {
+  background: var(--primary-hover);
+}
+
+/* ==========================================================================
+   Section 3: ONLY ONE FLOATING MICROPHONE BUTTON
+   ========================================================================== */
+
+.floating-mic-wrapper {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+}
+
+.floating-mic-btn {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1.4rem 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.45), 0 8px 10px -6px rgba(2, 132, 199, 0.3);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible;
+}
+
+.floating-mic-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 15px 30px -5px rgba(2, 132, 199, 0.55);
+}
+
+.floating-mic-btn .mic-icon {
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-mic-btn .mic-label {
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+/* State reactive styling on Floating Button */
+.floating-mic-btn.listening {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+  animation: pulse-green 2s infinite;
+}
+
+.floating-mic-btn.user-speaking {
+  background: linear-gradient(135deg, #10b981, #047857);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.7);
+}
+
+.floating-mic-btn.speaking {
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+  animation: pulse-blue 1.5s infinite;
+}
+
+.floating-mic-btn.thinking {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.floating-mic-btn.muted {
+  background: #64748b;
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+}
+
+.floating-mic-btn.error {
+  background: #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes pulse-blue {
+  0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(56, 189, 248, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+}
+
+/* ==========================================================================
+   Section 4: COMPACT PREMIUM VOICE CONSOLE
+   ========================================================================== */
+
+.voice-console-overlay {
+  position: fixed;
+  bottom: 6rem;
+  right: 2rem;
+  z-index: 9998;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+}
+
+.voice-console-overlay.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.voice-console-overlay.hidden {
+  display: none;
+}
+
+.voice-console-card {
+  width: 360px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.voice-console-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.console-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.pulsing-badge {
+  width: 8px;
+  height: 8px;
+  background: var(--emerald-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--emerald-accent);
+  animation: pulse-ring 2s infinite;
+}
+
+.console-close-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.console-close-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-primary);
+}
+
+/* Orb container */
+.console-orb-container {
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+#consoleOrbCanvas {
+  width: 180px;
+  height: 180px;
+}
+
+/* Dialogue Text */
+.console-dialogue-area {
+  text-align: center;
+  margin: 0.5rem 0 1rem 0;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.console-main-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+  transition: all 0.2s ease;
+}
+
+.console-sub-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Status Pill */
+.console-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  background: #f1f5f9;
+  border: 1px solid var(--border-light);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+/* Contextual Action Bar */
+.console-action-bar {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.console-action-bar.hidden {
+  display: none;
+}
+
+.auth-prompt-card {
+  background: #f8fafc;
+  border: 1px dashed var(--primary-brand);
+  border-radius: 12px;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.auth-prompt-card p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.btn-primary-action {
+  background: var(--primary-brand);
+  color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-primary-action:hover {
+  background: var(--primary-hover);
+}
+
+/* Minimal Transcript Box */
+.console-transcript-box {
+  width: 100%;
+  max-height: 90px;
+  overflow-y: auto;
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.transcript-line.user {
+  color: var(--primary-brand);
+}
+
+.transcript-line.ai {
+  color: var(--text-primary);
+}
+
+.speaker-tag {
+  font-weight: 700;
+}
+
+/* Console Footer Controls */
+.console-controls-footer {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.control-btn {
+  padding: 0.6rem 0;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-btn.mute-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.control-btn.mute-btn.active-muted {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.control-btn.end-btn {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #ef4444;
+}
+
+.control-btn.end-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* ==========================================================================
+   Section 28: Mobile Responsiveness
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .floating-mic-wrapper {
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .floating-mic-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .voice-console-overlay {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    transform: translateY(100%);
+  }
+
+  .voice-console-overlay.visible {
+    transform: translateY(0);
+  }
+
+  .voice-console-card {
+    width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 1.25rem;
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .console-orb-container {
+    width: 150px;
+    height: 150px;
+  }
+
+  #consoleOrbCanvas {
+    width: 150px;
+    height: 150px;
+  }
+}

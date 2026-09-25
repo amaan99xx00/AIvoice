@@ -199,6 +199,44 @@ export class AudioCaptureManager {
     }
   }
 
+  private _isMuted = false;
+
+  /**
+   * Section 7: Mute microphone input cleanly without ending voice session
+   */
+  public mute(): void {
+    this._isMuted = true;
+    if (this.mediaStream) {
+      this.mediaStream.getAudioTracks().forEach((t) => {
+        t.enabled = false;
+      });
+    }
+  }
+
+  /**
+   * Section 7: Unmute microphone input
+   */
+  public unmute(): void {
+    this._isMuted = false;
+    if (this.mediaStream) {
+      this.mediaStream.getAudioTracks().forEach((t) => {
+        t.enabled = true;
+      });
+    }
+  }
+
+  public isMuted(): boolean {
+    return this._isMuted;
+  }
+
+  /**
+   * Section 8 & 34: Completely stops all microphone tracks and releases hardware resources
+   */
+  public releaseAll(): void {
+    this.stopCapture();
+    this._isMuted = false;
+  }
+
   /**
    * Stops all active microphone tracks and cleans up resources
    */
@@ -213,6 +251,7 @@ export class AudioCaptureManager {
       });
       this.mediaStream = null;
     }
+    this._isMuted = false;
   }
 
   public getActiveStream(): MediaStream | null {

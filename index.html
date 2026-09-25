@@ -2,171 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>5A Professional Voice Capture & Audio Quality Engine</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PureVitality — Premium Wellness & AI Voice Shopping</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="brand-icon">🎙️</div>
-        <div class="brand-title">
-          <h1>AI Voice Agent & Audio Quality Engine</h1>
-          <p>Section 5A Specification Implementation • Browser Clean Audio Pipeline</p>
-        </div>
-      </div>
-      <div class="header-badges">
-        <span class="badge" id="permissionBadge"><span class="badge-dot"></span>Mic: Prompt</span>
-        <span class="badge" id="vadBadge">VAD: Idle</span>
-        <span class="badge" id="deviceBadge">Audio: Built-in Mic</span>
-        <span class="badge" id="testSummaryBadge">Acceptance Tests: 11/11 Passed</span>
-      </div>
-    </header>
+  <!-- E-commerce Storefront Header -->
+  <header class="store-header">
+    <div class="header-inner">
+      <a href="#" class="store-logo">
+        <div class="store-logo-icon">🌿</div>
+        <span>PureVitality</span>
+      </a>
 
-    <!-- Friendly User Alert Banner (e.g. Permission blocked, silent mic) -->
-    <div id="alertBanner" class="alert-banner"></div>
-
-    <div class="grid-main">
-      <!-- Left Column: Voice Agent Controller & Audio Metering -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <span>🗣️</span> Real-Time Voice Console
-          </div>
-          <span id="statusLabel" class="status-label idle">Session Idle</span>
-        </div>
-
-        <div class="mic-control-center">
-          <div class="mic-button-wrapper">
-            <button id="micToggleBtn" class="mic-button" title="Click to Speak with AI Assistant">
-              🎙️
-            </button>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">
-            Click to start natural conversation with instant barge-in support
-          </p>
-        </div>
-
-        <!-- Real-Time Waveform & VU Meter (5A.1, 5A.7) -->
-        <div class="visualizer-container">
-          <canvas id="waveformCanvas" class="canvas-waveform" width="560" height="70"></canvas>
-          <div class="vu-meter-bar">
-            <div id="vuFill" class="vu-meter-fill"></div>
-          </div>
-        </div>
-
-        <!-- Audio Metrics (5A.1, 5A.4, 5A.8) -->
-        <div class="metrics-row">
-          <div class="metric-box">
-            <div class="metric-title">Input Level</div>
-            <div class="metric-value" id="rmsValue">-60 dB</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-title">Sample Rate</div>
-            <div class="metric-value">16 kHz</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-title">AEC / HPF</div>
-            <div class="metric-value" style="color: var(--accent-emerald);">80 Hz Active</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-title">Latency Mode</div>
-            <div class="metric-value" style="color: var(--accent-cyan);">Ultra-Low</div>
-          </div>
-        </div>
-
-        <!-- Quick Interaction Test Prompts (5A.9, 5A.10, 5A.3, 5A.15) -->
-        <div class="quick-prompts-section">
-          <div class="prompts-title">Simulate Real Customer Phrases (5A.9 & 5A.10)</div>
-          <div class="prompt-chips">
-            <button class="prompt-chip" data-prompt="60 pills kitne ka hai?">
-              "60 pills kitne ka hai?"
-            </button>
-            <button class="prompt-chip" data-prompt="Can you tell me about the 100-pill option?">
-              "Tell me about the 100-pill option"
-            </button>
-            <button class="prompt-chip" data-prompt="Add the cheaper one to my cart">
-              "Add the cheaper one to my cart"
-            </button>
-            <button class="prompt-chip" data-prompt="Is this product available?">
-              "Is this product available?"
-            </button>
-            <button class="prompt-chip" data-prompt="How much is shipping?">
-              "How much is shipping?"
-            </button>
-            <button class="prompt-chip barge-in-chip" data-prompt="Wait, what is the price?">
-              ⚡ Interrupt: "Wait, what is the price?"
-            </button>
-            <button class="prompt-chip" data-prompt="Give me sixteen pills">
-              ❓ Ambiguity: "Give me 16 pills"
-            </button>
-            <button class="prompt-chip" data-prompt="Show me all catalog options">
-              📋 List: Multi-option Pacing
-            </button>
-          </div>
-        </div>
-
-        <!-- Verified Product Catalog Options (5A.13, 5A.14, 5A.15) -->
-        <div style="margin-top: 1.5rem;">
-          <div class="prompts-title">Verified Catalog Options (5A.14 Spoken Normalization)</div>
-          <div class="catalog-options-grid">
-            <div class="catalog-card">
-              <div class="catalog-qty">30 Pills</div>
-              <div class="catalog-price">$29.99</div>
-              <div class="catalog-spoken">"twenty-nine dollars and ninety-nine cents"</div>
-            </div>
-            <div class="catalog-card">
-              <div class="catalog-qty">60 Pills</div>
-              <div class="catalog-price">$54.99</div>
-              <div class="catalog-spoken">"fifty-four dollars and ninety-nine cents"</div>
-            </div>
-            <div class="catalog-card">
-              <div class="catalog-qty">100 Pills</div>
-              <div class="catalog-price">$79.99</div>
-              <div class="catalog-spoken">"seventy-nine dollars and ninety-nine cents"</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Live Conversation Transcript & 5A.22 Acceptance Test Suite -->
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <!-- Live Transcript -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <span>💬</span> Live Conversation & Barge-in Log
-            </div>
-          </div>
-          <div id="transcriptBox" class="transcript-box">
-            <div class="message-bubble ai">
-              <div class="bubble-author">AI Assistant</div>
-              <div>Ready for real-time customer voice input. Click the microphone or select any simulated phrase to begin.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 5A.22 Acceptance Test Suite -->
-        <div class="card">
-          <div class="test-suite-header">
-            <div class="card-title">
-              <span>🧪</span> Section 5A.22 Acceptance Test Suite
-            </div>
-            <button id="btnRunTests" class="btn-run-tests">
-              ▶ Run All 11 Tests
-            </button>
-          </div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-            Verifies Quiet Room, Fan/AC filter, Interruption, Pause hang-time, Disambiguation & Mobile constraints.
-          </p>
-          <div id="testsContainer" class="tests-list">
-            <!-- Dynamically populated by VoiceAcceptanceSuite -->
-          </div>
-        </div>
+      <div class="header-actions">
+        <span id="authStatus" class="auth-badge">👤 Guest (Sign in)</span>
+        <button class="cart-button" title="View Cart">
+          <span>🛒 Cart</span>
+          <span id="cartCounter" class="cart-counter">0</span>
+        </button>
       </div>
     </div>
-  </div>
+  </header>
+
+  <!-- Storefront Main Content -->
+  <main class="store-main">
+    <div class="hero-banner">
+      <h1>Natural Skincare & Wellness</h1>
+      <p>
+        Experience hands-free, real-time voice shopping. Ask about products, variants, ingredients, and pricing in English, Hindi, or Hinglish.
+      </p>
+    </div>
+
+    <!-- Verified Product Catalog (On-Demand Retrieval) -->
+    <div id="productsGrid" class="products-grid">
+      <!-- Populated dynamically from verified storeCatalog.ts -->
+    </div>
+
+    <!-- Test & Verification Prompts (Collapsible minimal footer for instant verification) -->
+    <div style="margin-top: 3.5rem; padding: 1.25rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span style="font-size: 0.8rem; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">
+          Voice Assistant Interaction Prompts (Sections 11, 12, 16, 19, 25)
+        </span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <button class="quick-test-chip" data-query="I need something for skin care" style="padding: 0.35rem 0.75rem; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 9999px; font-size: 0.8rem; cursor: pointer;">
+          "I need something for skin care"
+        </button>
+        <button class="quick-test-chip" data-query="Something for acne" style="padding: 0.35rem 0.75rem; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 9999px; font-size: 0.8rem; cursor: pointer;">
+          "Something for acne"
+        </button>
+        <button class="quick-test-chip" data-query="Mujhe koi skincare product chahiye" style="padding: 0.35rem 0.75rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 9999px; font-size: 0.8rem; color: #166534; cursor: pointer;">
+          🇮🇳 Hindi: "Mujhe koi skincare product chahiye"
+        </button>
+        <button class="quick-test-chip" data-query="60 pills kitne ka hai?" style="padding: 0.35rem 0.75rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 9999px; font-size: 0.8rem; color: #166534; cursor: pointer;">
+          🇮🇳 Hinglish: "60 pills kitne ka hai?"
+        </button>
+        <button class="quick-test-chip" data-query="Which one is cheaper?" style="padding: 0.35rem 0.75rem; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 9999px; font-size: 0.8rem; cursor: pointer;">
+          Context: "Which one is cheaper?"
+        </button>
+        <button class="quick-test-chip" data-query="Yes, add it to my cart" style="padding: 0.35rem 0.75rem; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 9999px; font-size: 0.8rem; color: #1e40af; cursor: pointer;">
+          Cart: "Yes, add it to my cart"
+        </button>
+        <button class="quick-test-chip" data-query="How much is shipping?" style="padding: 0.35rem 0.75rem; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 9999px; font-size: 0.8rem; cursor: pointer;">
+          Policy: "How much is shipping?"
+        </button>
+        <button class="quick-test-chip" data-query="Wait, what is the price?" style="padding: 0.35rem 0.75rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: 9999px; font-size: 0.8rem; color: #92400e; cursor: pointer;">
+          ⚡ Interruption: "Wait, what is the price?"
+        </button>
+      </div>
+    </div>
+  </main>
 
   <script type="module" src="/src/index.ts"></script>
 </body>
