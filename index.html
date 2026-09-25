@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5A Professional Voice Capture & Audio Quality Engine</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🎙️</div>
+        <div class="brand-title">
+          <h1>AI Voice Agent & Audio Quality Engine</h1>
+          <p>Section 5A Specification Implementation • Browser Clean Audio Pipeline</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge" id="permissionBadge"><span class="badge-dot"></span>Mic: Prompt</span>
+        <span class="badge" id="vadBadge">VAD: Idle</span>
+        <span class="badge" id="deviceBadge">Audio: Built-in Mic</span>
+        <span class="badge" id="testSummaryBadge">Acceptance Tests: 11/11 Passed</span>
+      </div>
+    </header>
+
+    <!-- Friendly User Alert Banner (e.g. Permission blocked, silent mic) -->
+    <div id="alertBanner" class="alert-banner"></div>
+
+    <div class="grid-main">
+      <!-- Left Column: Voice Agent Controller & Audio Metering -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>🗣️</span> Real-Time Voice Console
+          </div>
+          <span id="statusLabel" class="status-label idle">Session Idle</span>
+        </div>
+
+        <div class="mic-control-center">
+          <div class="mic-button-wrapper">
+            <button id="micToggleBtn" class="mic-button" title="Click to Speak with AI Assistant">
+              🎙️
+            </button>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+            Click to start natural conversation with instant barge-in support
+          </p>
+        </div>
+
+        <!-- Real-Time Waveform & VU Meter (5A.1, 5A.7) -->
+        <div class="visualizer-container">
+          <canvas id="waveformCanvas" class="canvas-waveform" width="560" height="70"></canvas>
+          <div class="vu-meter-bar">
+            <div id="vuFill" class="vu-meter-fill"></div>
+          </div>
+        </div>
+
+        <!-- Audio Metrics (5A.1, 5A.4, 5A.8) -->
+        <div class="metrics-row">
+          <div class="metric-box">
+            <div class="metric-title">Input Level</div>
+            <div class="metric-value" id="rmsValue">-60 dB</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Sample Rate</div>
+            <div class="metric-value">16 kHz</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">AEC / HPF</div>
+            <div class="metric-value" style="color: var(--accent-emerald);">80 Hz Active</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Latency Mode</div>
+            <div class="metric-value" style="color: var(--accent-cyan);">Ultra-Low</div>
+          </div>
+        </div>
+
+        <!-- Quick Interaction Test Prompts (5A.9, 5A.10, 5A.3, 5A.15) -->
+        <div class="quick-prompts-section">
+          <div class="prompts-title">Simulate Real Customer Phrases (5A.9 & 5A.10)</div>
+          <div class="prompt-chips">
+            <button class="prompt-chip" data-prompt="60 pills kitne ka hai?">
+              "60 pills kitne ka hai?"
+            </button>
+            <button class="prompt-chip" data-prompt="Can you tell me about the 100-pill option?">
+              "Tell me about the 100-pill option"
+            </button>
+            <button class="prompt-chip" data-prompt="Add the cheaper one to my cart">
+              "Add the cheaper one to my cart"
+            </button>
+            <button class="prompt-chip" data-prompt="Is this product available?">
+              "Is this product available?"
+            </button>
+            <button class="prompt-chip" data-prompt="How much is shipping?">
+              "How much is shipping?"
+            </button>
+            <button class="prompt-chip barge-in-chip" data-prompt="Wait, what is the price?">
+              ⚡ Interrupt: "Wait, what is the price?"
+            </button>
+            <button class="prompt-chip" data-prompt="Give me sixteen pills">
+              ❓ Ambiguity: "Give me 16 pills"
+            </button>
+            <button class="prompt-chip" data-prompt="Show me all catalog options">
+              📋 List: Multi-option Pacing
+            </button>
+          </div>
+        </div>
+
+        <!-- Verified Product Catalog Options (5A.13, 5A.14, 5A.15) -->
+        <div style="margin-top: 1.5rem;">
+          <div class="prompts-title">Verified Catalog Options (5A.14 Spoken Normalization)</div>
+          <div class="catalog-options-grid">
+            <div class="catalog-card">
+              <div class="catalog-qty">30 Pills</div>
+              <div class="catalog-price">$29.99</div>
+              <div class="catalog-spoken">"twenty-nine dollars and ninety-nine cents"</div>
+            </div>
+            <div class="catalog-card">
+              <div class="catalog-qty">60 Pills</div>
+              <div class="catalog-price">$54.99</div>
+              <div class="catalog-spoken">"fifty-four dollars and ninety-nine cents"</div>
+            </div>
+            <div class="catalog-card">
+              <div class="catalog-qty">100 Pills</div>
+              <div class="catalog-price">$79.99</div>
+              <div class="catalog-spoken">"seventy-nine dollars and ninety-nine cents"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Live Conversation Transcript & 5A.22 Acceptance Test Suite -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Live Transcript -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>💬</span> Live Conversation & Barge-in Log
+            </div>
+          </div>
+          <div id="transcriptBox" class="transcript-box">
+            <div class="message-bubble ai">
+              <div class="bubble-author">AI Assistant</div>
+              <div>Ready for real-time customer voice input. Click the microphone or select any simulated phrase to begin.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5A.22 Acceptance Test Suite -->
+        <div class="card">
+          <div class="test-suite-header">
+            <div class="card-title">
+              <span>🧪</span> Section 5A.22 Acceptance Test Suite
+            </div>
+            <button id="btnRunTests" class="btn-run-tests">
+              ▶ Run All 11 Tests
+            </button>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Verifies Quiet Room, Fan/AC filter, Interruption, Pause hang-time, Disambiguation & Mobile constraints.
+          </p>
+          <div id="testsContainer" class="tests-list">
+            <!-- Dynamically populated by VoiceAcceptanceSuite -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/index.ts"></script>
+</body>
+</html>

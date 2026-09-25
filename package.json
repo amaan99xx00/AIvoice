@@ -1,0 +1,22 @@
+{
+  "name": "aivoice",
+  "version": "1.0.0",
+  "description": "5A Professional Voice Capture & Audio Quality Engine for E-commerce AI Voice Agent",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "npx tsx scripts/runTests.ts"
+  },
+  "keywords": ["voice", "vapi", "vad", "webaudio", "barge-in", "echo-cancellation", "speech-recognition"],
+  "author": "Antigravity",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "@vapi-ai/web": "^2.5.0"
+  }
+}
