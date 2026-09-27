@@ -1,92 +1,93 @@
-# PureVitality — Real-Time AI Voice Shopping Assistant
+# Moda In Europe — AI Shopping & Voice Concierge Storefront
 
-A production-grade, voice-first e-commerce shopping assistant with clean browser audio processing, real-time voice activity detection (VAD), instant interruption (barge-in), dynamic multilingual intent routing (English, Hindi, Hinglish), authentication gating, and real WooCommerce cart integration.
-
----
-
-## 🌟 Key Features & Requirements Coverage
-
-### 1. Frontend Redesign & Voice-First UX (Sections 2, 3, 4, 29)
-* **Single Floating Microphone Button**: Exactly **ONE** primary floating microphone button on the website (`#primaryFloatingMicBtn`). Never shows duplicate call buttons or redundant controls.
-* **Compact Premium Voice Console**: Lightweight modal overlay (`.voice-console-overlay`) featuring:
-  * Animated **Orb Visualizer** reactive to microphone RMS and AI speaking state.
-  * Dynamic Greeting and concise conversational response text.
-  * Live Status Badge (`🎙️ Listening...`, `🗣️ User Speaking`, `✨ Thinking...`, `🔊 Speaking...`, `🔇 Muted`).
-  * Minimal Transcript Drawer (`#consoleTranscriptArea`).
-  * Control Footer: `[🔇 Mute / Unmute]` and `[✕ End Call]`.
-
-### 2. Conversational Voice Flow & Strict Rules (Sections 5, 6, 11, 12, 13, 39, 40)
-* **Dynamic Time-Based Greeting** (Section 5):
-  * `00:00–11:59`: *"Good morning! How can I help you today?"*
-  * `12:00–16:59`: *"Good afternoon! How can I help you today?"*
-  * `17:00–23:59`: *"Good evening! How can I help you today?"*
-* **Stop After Greeting** (Section 13): The AI stops speaking immediately after greeting and waits silently for the customer.
-* **Never Interrupt the User & Barge-In** (Sections 6 & 25): Immediate TTS cutoff (<100ms) when customer speaks. The AI enters `LISTENING` and remains silent without filler speech (*"Okay..."*, *"Sure..."*).
-* **Language Following** (Section 12):
-  * English input $\rightarrow$ English response.
-  * Hindi input $\rightarrow$ Hindi response.
-  * Hinglish input $\rightarrow$ Hinglish response.
-* **On-Demand Product Inquiries** (Sections 14 & 17): Only searches verified catalog when the customer asks for products, categories (e.g. Skincare, Acne), variants (30, 60, 100 tablets), or prices. Never hallucinates information (Section 15).
-* **Context Maintenance** (Section 18): Remembers current product and category across turns (*"Which one is cheaper?"*, *"What about the 60 tablet one?"*).
-
-### 3. Real WooCommerce Cart & Authentication Flow (Sections 19, 20, 21, 22)
-* **Explicit Cart Confirmation** (Section 19): Never adds anything automatically. Always asks: *"Would you like me to add this to your cart?"*.
-* **Authentication Check** (Section 20): Checks user login status before cart modification. If not logged in, asks: *"You'll need to log in before I can add this to your cart."* and renders a clean Login action.
-* **Pending Cart Context Preservation** (Section 21): Saves product ID, variant, and quantity across the login/signup barrier.
-* **Real Cart Execution** (Section 22): Executes real cart additions and confirms only upon verified success: *"Done — I've added it to your cart."*.
-
-### 4. Audio Quality, Hardware & Recovery (Sections 7, 8, 9, 10, 26, 27, 34)
-* **Mute / Unmute** (Section 7): Dedicated button temporarily disables microphone tracks without terminating the session.
-* **End Call & Resource Cleanup** (Sections 8 & 34): Releases microphone tracks (`MediaStreamTrack.stop()`), stops audio playback, detaches listeners, and closes console.
-* **Clean Microphone Capture** (Section 9): Browser-native AEC, noise suppression, AGC, and 80Hz rumble filter.
-* **Watchdog State Machine** (Sections 10 & 32): 13 distinct states (`IDLE`, `CONNECTING`, `READY`, `LISTENING`, `USER_SPEAKING`, `TRANSCRIBING`, `THINKING`, `ASSISTANT_SPEAKING`, `MUTED`, `LOGIN_REQUIRED`, `ACTION_CONFIRMATION`, `ERROR`, `ENDED`) with automatic watchdog timeouts preventing stuck states.
-* **Double Connection Prevention** (Section 33): Debouncing and state transition guards.
+A high-fidelity European e-commerce web application inspired by [Moda In Europe](https://modaineurope.com/), featuring real-time AI voice concierge, intelligent single-product query understanding, rich voice console product cards, multi-turn clinical expert consultation scheduling, and a verified European wakefulness medications catalog with domestic dispatch.
 
 ---
 
-## 🧪 Automated Test Suite (27/27 Passing — 100%)
+## 🌟 Key Architecture & Features
 
-Run all automated acceptance and UX regression tests:
+### 1. Production-Ready Free Deployment (Vercel)
+* **Zero-Cost Hosting**: Optimized for Vercel Hobby Free Tier.
+* **SPA Direct Navigation**: `vercel.json` wildcard rewrite (`/(.*) -> /index.html`) ensures direct deep links (such as `/product/nike-air-max-270` or `/product/modalert-100mg`) load instantly without 404 errors.
+* **HTTPS Microphone Permissions**: Production `Permissions-Policy: microphone=(self), camera=(), geolocation=()` header enables clean browser audio capture across mobile, tablet, and desktop.
+* **Complete Static SEO Assets**: Pre-rendered `robots.txt`, dynamic `sitemap.xml`, vector `favicon.svg`, and PWA `site.webmanifest` in `public/`.
+
+### 2. Single-Product Query Understanding & Dynamic Rich Cards
+* **Exact Identification**: AI detects single product queries by name (*"Tell me about Nike Air Max 270"*, *"Is Modalert 200mg in stock?"*, *"What sizes are available?"*).
+* **Console Rich Card**: Spawns dynamic product card inside `#consoleProductDisplayArea` with category image, pricing, stock badge, review rating, bullet features, and 3 action CTAs (**View Product**, **Buy / Select Product**, **Ask About This Product**).
+* **100% Reliable SVG Fallbacks**: Inline vector SVG placeholders for footwear, medications, skincare, and general products prevent broken image boxes.
+
+### 3. Voice & Audio Quality Pipeline
+* **Zero External Paid Dependencies**: Works 100% out of the box using standard browser Web Audio, Web Speech, and an intelligent client-side `MultilingualIntentRouter` supporting English, French, German, and Hindi/Hinglish.
+* **Clean Microphone Capture**: Hardware-accelerated Acoustic Echo Cancellation (AEC), noise suppression, automatic gain control (AGC), and an 80Hz rumble high-pass filter.
+* **Instant Barge-In**: Sub-100ms interruption cutoff when user speaks during AI playback.
+* **Optional Cloud Speech**: Seamlessly switches to Vapi Web SDK if `VITE_VAPI_API_KEY` is provided in environment variables.
+
+---
+
+## 🧪 Automated Test Suite (90 / 90 Tests Passed — 100%)
+
+Run all 5 acceptance and regression test suites:
 ```bash
 npm test
 ```
 
-### Test Suite Summary:
-1. **Section 5A Audio Acceptance Tests** (11/11 Passed):
-   * Quiet room speech recognition
-   * Fan/AC noise & Hinglish inquiry (`"60 pills kitne ka hai?"`)
-   * Moderate background noise relative intent
-   * Mobile audio constraints (AEC, NS, AGC, Mono)
-   * Headphone echo feedback prevention
-   * Bluetooth headset dynamic routing
-   * Customer interruption / Barge-in (<100ms halt)
-   * Short pause continuity (700ms hang-time)
-   * Long pause turn finalization
-   * Low volume / silent mic detection
-   * Quantity clarity (60 vs 16 disambiguation)
-2. **Frontend, UX & Real-Time Voice Tests** (16/16 Passed):
-   * Morning, afternoon, and evening dynamic greetings
-   * English, Hindi, and Hinglish language following
-   * Skincare & acne on-demand product retrieval
-   * Contextual follow-up pricing
-   * 30, 60, and 100 tablet variant handling
-   * Authentication gating before cart actions
-   * Preservation of pending cart context across login
-   * Real WooCommerce cart execution
-   * Centralized state transitions and watchdog timeout recovery
+### Test Coverage Breakdown:
+1. **Audio & Voice Quality Suite** (`scripts/runTests.ts` — 11/11 Passed):
+   * Quiet room speech recognition, fan noise filtering, 16 vs 60 quantity disambiguation.
+   * Mobile constraints (mono, AEC, AGC, 16kHz) and headphone feedback isolation.
+   * Barge-in interruption (<100ms halt) and natural hang-time turn finalization.
+2. **Frontend & Voice UX Suite** (`scripts/testFrontendVoiceUx.ts` — 21/21 Passed):
+   * Dynamic time-based greetings, multilingual following (EN, FR, DE, HI).
+   * Contextual price memory, authentication gating, pending cart preservation.
+3. **Final Refinements Suite** (`scripts/testFinalRefinements.ts` — 24/24 Passed):
+   * Header navigation (exactly 5 items), 12 authentic European medications.
+   * Single product PDP context awareness, site logistics & contact knowledge.
+   * 10-step multi-turn consultation booking flow.
+4. **Single Product Experience Suite** (`scripts/testSingleProductExperience.ts` — 15/15 Passed):
+   * Specific product queries, dynamic rich cards, dedicated PDP navigation.
+   * Category SVG fallback images, multi-product vs single-product distinction.
+5. **Production Readiness Suite** (`scripts/testProductionReadiness.ts` — 19/19 Passed):
+   * `vercel.json` SPA rewrites, permissions policy, `.env.example` hygiene.
+   * Direct pathname deep linking, production SEO meta tags, zero localhost references.
 
 ---
 
-## 🚀 Running the Storefront
+## 🚢 Step-by-Step Free Vercel Deployment Guide
 
-1. **Development Server**:
+### Step 1: Push Code to GitHub
+1. Initialize git and commit all project files:
    ```bash
-   npm run dev
+   git add .
+   git commit -m "Production release ready for free Vercel deployment"
    ```
-   Open `http://localhost:5173` in your browser.
+2. Create a new repository on [GitHub](https://github.com/new) (e.g. `modaineurope-voice-store`).
+3. Link and push your repository:
+   ```bash
+   git remote add origin https://github.com/<YOUR-USERNAME>/modaineurope-voice-store.git
+   git branch -M main
+   git push -u origin main
+   ```
 
-2. **Production Build**:
-   ```bash
-   npm run build
-   ```
-   Generates an ultra-fast production bundle (56 kB total JavaScript, 16 kB gzip).
+### Step 2: Import into Vercel
+1. Log in to [Vercel](https://vercel.com) using your GitHub account (Hobby Free Plan).
+2. Click **Add New...** $\rightarrow$ **Project**.
+3. Select your GitHub repository (`modaineurope-voice-store`) and click **Import**.
+
+### Step 3: Configure Build & Output Settings
+Vercel automatically detects Vite from `package.json` and `vercel.json`:
+* **Framework Preset**: Vite
+* **Root Directory**: `./`
+* **Build Command**: `npm run build`
+* **Output Directory**: `dist`
+
+### Step 4: Configure Environment Variables (Optional)
+Under the **Environment Variables** section in the Vercel import modal, add any desired variables:
+* `VITE_APP_URL`: `https://<YOUR-PROJECT-NAME>.vercel.app` (or leave blank to auto-detect).
+* `VITE_SITE_NAME`: `Moda In Europe`
+* `VITE_VAPI_API_KEY`: *(Optional)* Your public Vapi API key if using cloud voice; leave empty to use the built-in free browser voice engine.
+
+### Step 5: Deploy
+1. Click **Deploy**.
+2. Vercel will run `tsc && vite build`, bundle assets, apply caching headers, and deploy to their global Edge CDN in ~30 seconds.
+3. Once complete, you will receive your free production URL: `https://<your-project-name>.vercel.app`.
