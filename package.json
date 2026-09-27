@@ -7,12 +7,21 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "npx tsx scripts/runTests.ts && npx tsx scripts/testFrontendVoiceUx.ts"
+    "test": "tsx scripts/runTests.ts && tsx scripts/testFrontendVoiceUx.ts && tsx scripts/testFinalRefinements.ts && tsx scripts/testSingleProductExperience.ts && tsx scripts/testProductionReadiness.ts"
   },
-  "keywords": ["voice", "vapi", "vad", "webaudio", "barge-in", "echo-cancellation", "speech-recognition"],
+  "keywords": [
+    "voice",
+    "vapi",
+    "vad",
+    "webaudio",
+    "barge-in",
+    "echo-cancellation",
+    "speech-recognition"
+  ],
   "author": "Antigravity",
   "license": "MIT",
   "devDependencies": {
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
   },

@@ -1,5 +1,17 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  readonly VITE_APP_URL?: string;
+  readonly VITE_SITE_NAME?: string;
+  readonly VITE_VAPI_API_KEY?: string;
+  readonly VITE_VAPI_ASSISTANT_ID?: string;
+  readonly VITE_WOOCOMMERCE_API_URL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 interface SpeechRecognitionErrorEvent extends Event {
   readonly error: string;
   readonly message: string;

@@ -141,6 +141,13 @@ export class WooCommerceService {
     };
   }
 
+  public static removeItem(productId: string, variantId: string): void {
+    this.cartItems = this.cartItems.filter(
+      (item) => !(item.productId === productId && item.variantId === variantId)
+    );
+    this.notifyListeners();
+  }
+
   public static subscribe(listener: CartListener): () => void {
     this.listeners.push(listener);
     listener(this.getCart());

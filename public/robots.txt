@@ -1,0 +1,9 @@
+# Robots.txt for Moda In Europe
+User-agent: *
+Allow: /
+
+# Disallow checkout / private api paths if any
+Disallow: /api/
+Disallow: /checkout/
+
+Sitemap: https://modaineurope.vercel.app/sitemap.xml

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00194b"/>
+      <stop offset="100%" stop-color="#00349a"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffcc00"/>
+      <stop offset="100%" stop-color="#e6b800"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bgGrad)"/>
+  <!-- Stylized European Star Halo & Pill -->
+  <circle cx="32" cy="32" r="26" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"/>
+  <!-- Pill capsule -->
+  <g transform="rotate(-30 32 32)">
+    <rect x="22" y="16" width="20" height="32" rx="10" fill="#ffffff"/>
+    <path d="M22 26 C22 20.48 26.48 16 32 16 C37.52 16 42 20.48 42 26 L42 32 L22 32 Z" fill="url(#goldGrad)"/>
+    <line x1="22" y1="32" x2="42" y2="32" stroke="#00194b" stroke-width="1.5" stroke-opacity="0.3"/>
+  </g>
+</svg>

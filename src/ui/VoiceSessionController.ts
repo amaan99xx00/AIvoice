@@ -1,7 +1,8 @@
 /**
  * VoiceSessionController
  * Master orchestrator connecting the Single Floating Mic Button, Compact Voice Console,
- * State Machine, Clean Audio Pipeline, Multilingual Intent Router, and WooCommerce Service.
+ * State Machine, Clean Audio Pipeline, Multilingual Intent Router, WooCommerce Service,
+ * and ExpertModalComponent.
  */
 
 import { VoiceStateMachine } from '../state/VoiceStateMachine';
@@ -15,7 +16,9 @@ import { AudioQualityChecker } from '../audio/AudioQualityChecker';
 import { AudioOutputManager } from '../audio/AudioOutputManager';
 import { MultilingualIntentRouter } from '../speech/MultilingualIntentRouter';
 import { WooCommerceService } from '../services/wooCommerceService';
+import { AuthService } from '../services/authService';
 import { WebSpeechFallback } from '../provider/WebSpeechFallback';
+import { ExpertModalComponent } from '../components/ExpertModal';
 
 export class VoiceSessionController {
   private stateMachine: VoiceStateMachine;
@@ -58,7 +61,7 @@ export class VoiceSessionController {
         this.echoManager.setAiSpeakingState(false);
         if (this.isSessionActive && !this.captureManager.isMuted()) {
           this.stateMachine.transition('LISTENING');
-          this.voiceConsole.setGreeting("I'm listening...", "Speak in English, Hindi, or Hinglish");
+          this.voiceConsole.setGreeting("I'm listening...", "Speak in English, French, German, or Hindi");
         }
       }
     });
@@ -67,7 +70,7 @@ export class VoiceSessionController {
     this.captureManager = new AudioCaptureManager({
       onError: (msg) => {
         this.stateMachine.transition('ERROR', { errorMessage: msg });
-        this.voiceConsole.setGreeting('Microphone access is required', 'Please enable access in browser settings');
+        this.voiceConsole.setGreeting('Microphone access is required', 'Please enable access in browser settings or use text chat below');
       }
     });
 
@@ -83,7 +86,6 @@ export class VoiceSessionController {
     // 4. Voice Activity Detector (Section 2, 6, 9)
     this.vad = new VoiceActivityDetector({
       onSpeechStart: () => {
-        // Do not trigger user speaking if AI is speaking (echo filter handles barge-in)
         if (this.bargeInManager.getIsAiSpeaking()) {
           return;
         }
@@ -92,7 +94,6 @@ export class VoiceSessionController {
         }
       },
       onSpeechEnd: (_durationMs) => {
-        // Only transition to THINKING if we were in USER_SPEAKING
         if (this.isSessionActive && !this.captureManager.isMuted() && !this.bargeInManager.getIsAiSpeaking()) {
           if (this.stateMachine.getState() === 'USER_SPEAKING') {
             this.stateMachine.transition('THINKING');
@@ -125,12 +126,18 @@ export class VoiceSessionController {
       }
     });
 
-    // 6. Compact Voice Console (Section 4, 7, 8)
+    // 6. Compact Voice Console with Text Input Fallback & Action Chips
     this.voiceConsole = new CompactVoiceConsole(this.stateMachine, {
       onToggleMute: () => this.toggleMute(),
       onEndSession: () => this.endSession(),
       onRetry: () => this.startSession(),
-      onUserConfirmedCartAction: () => this.handlePostAuthCartConfirmation()
+      onUserConfirmedCartAction: () => this.handlePostAuthCartConfirmation(),
+      onUserTextInput: (text: string) => {
+        this.handleUserTextFallback(text);
+      },
+      onActionChipClick: (actionType: string, payload?: any) => {
+        this.handleActionChipTrigger(actionType, payload);
+      }
     });
 
     // 7. Single Floating Microphone Button (Section 3)
@@ -143,7 +150,6 @@ export class VoiceSessionController {
     if (!this.isSessionActive) {
       this.startSession();
     } else {
-      // If already active, toggle console visibility
       if (this.voiceConsole.getIsVisible()) {
         this.voiceConsole.hide();
       } else {
@@ -163,7 +169,7 @@ export class VoiceSessionController {
       this.stateMachine.transition('CONNECTING');
       this.voiceConsole.show();
       this.voiceConsole.clearTranscript();
-      this.voiceConsole.setGreeting('Connecting to voice assistant...', 'Setting up audio pipeline');
+      this.voiceConsole.setGreeting('Connecting to Moda AI...', 'Setting up audio pipeline');
 
       // 1. Mobile audio unlock (Section 28)
       await this.outputManager.unlockMobileAudio();
@@ -190,10 +196,26 @@ export class VoiceSessionController {
       this.isSessionActive = true;
       this.stateMachine.setIsTransitioning(false);
 
-      // Section 5: Dynamic greeting based on user's local time
-      const greeting = MultilingualIntentRouter.getDynamicGreeting();
-      this.voiceConsole.setGreeting(greeting, 'How can I help you today?');
+      // Section 8: Natural Opening & Conversational Tone
+      const isReturning = AuthService.isLoggedIn() || localStorage.getItem('moda_session_visited') === 'true';
+      try {
+        localStorage.setItem('moda_session_visited', 'true');
+      } catch (e) {
+        // ignore in private browsing
+      }
+      const greeting = isReturning
+        ? 'Hi, welcome back. How can I help you today?'
+        : 'Hi! How can I help you today?';
+
+      this.voiceConsole.setGreeting(greeting, 'Moda AI Assistant');
       this.voiceConsole.addTranscriptEntry('AI', greeting);
+
+      // Set initial quick suggestion chips
+      this.voiceConsole.setActionChips([
+        { label: 'Modalert 100mg', actionType: 'SIMULATE', payload: 'Tell me about Modalert 100mg' },
+        { label: 'Wholesale & Bulk', actionType: 'OPEN_EXPERT_CALL', payload: { type: 'bulk' } },
+        { label: 'Modafinil vs Armodafinil', actionType: 'SIMULATE', payload: 'What is the difference between Modafinil and Armodafinil?' }
+      ]);
 
       // Section 13: Speak greeting then STOP SPEAKING. Wait silently for customer.
       this.speechEngine.speak(greeting);
@@ -202,8 +224,14 @@ export class VoiceSessionController {
       this.isSessionActive = false;
       this.stateMachine.setIsTransitioning(false);
       this.stateMachine.transition('ERROR', {
-        errorMessage: 'Microphone access is required to use voice chat.'
+        errorMessage: 'Microphone permission not granted. You can still type below.'
       });
+      // Allow user to use text fallback even if mic fails
+      this.voiceConsole.show();
+      this.voiceConsole.setGreeting(
+        "Microphone wasn't detected",
+        'You can type your questions in the box below!'
+      );
     }
   }
 
@@ -228,7 +256,10 @@ export class VoiceSessionController {
    * Section 8 & 34: End Session and release all microphone resources
    */
   public endSession(): void {
-    if (!this.isSessionActive) return;
+    if (!this.isSessionActive) {
+      this.voiceConsole.hide();
+      return;
+    }
 
     this.isSessionActive = false;
     this.speechEngine.stopListening();
@@ -247,7 +278,35 @@ export class VoiceSessionController {
   }
 
   /**
-   * Processes user customer speech with context, language following, and on-demand product info
+   * Handles text input fallback (typing in the console)
+   */
+  public handleUserTextFallback(text: string): void {
+    if (!this.voiceConsole.getIsVisible()) {
+      this.voiceConsole.show();
+    }
+    this.handleCustomerUtterance(text);
+  }
+
+  /**
+   * Handles clicking on an Action Chip in the console
+   */
+  private handleActionChipTrigger(actionType: string, payload?: any): void {
+    if (actionType === 'OPEN_EXPERT_CALL') {
+      ExpertModalComponent.open(payload?.type || 'bulk', payload?.prefillMessage);
+    } else if (actionType === 'NAVIGATE') {
+      const target = document.querySelector(payload?.targetSelector || '#products');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (actionType === 'CONFIRM_CART') {
+      this.handleCustomerUtterance('Yes, add it');
+    } else if (actionType === 'SIMULATE' && typeof payload === 'string') {
+      this.handleCustomerUtterance(payload);
+    }
+  }
+
+  /**
+   * Processes user customer speech/text with context, language following, and on-demand product info
    */
   public async handleCustomerUtterance(transcript: string): Promise<void> {
     if (!transcript.trim()) return;
@@ -258,20 +317,67 @@ export class VoiceSessionController {
     // Route intent
     const result = this.router.processUtterance(transcript);
 
-    // Update dialogue text
-    this.voiceConsole.setGreeting(result.aiResponseText, 'AI Assistant');
+    // Update dialogue text & transcript
+    this.voiceConsole.setGreeting(result.aiResponseText, 'Moda AI Assistant');
     this.voiceConsole.addTranscriptEntry('AI', result.aiResponseText);
+
+    // Dynamic Product Display (Single Product Card / Multi-Product List)
+    if (result.productCard) {
+      this.voiceConsole.displayProductCard(result.productCard);
+    } else if (result.productList && result.productList.length > 0) {
+      this.voiceConsole.displayProductList(result.productList);
+    } else {
+      this.voiceConsole.clearProductDisplay();
+    }
+
+    // Dynamic Action Chips based on response
+    const chips: { label: string; actionType: string; payload?: any }[] = [];
+
+    if (result.actionRequired === 'OPEN_EXPERT_CALL' && result.actionButtonLabel) {
+      chips.push({
+        label: result.actionButtonLabel,
+        actionType: 'OPEN_EXPERT_CALL',
+        payload: result.actionPayload
+      });
+    }
+
+    if (result.actionRequired === 'NAVIGATE') {
+      if (result.actionButtonLabel) {
+        chips.push({
+          label: result.actionButtonLabel,
+          actionType: 'NAVIGATE',
+          payload: result.actionPayload
+        });
+      }
+      // Auto smooth scroll to requested section
+      const target = document.querySelector(result.actionPayload?.targetSelector || '');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    if (result.actionRequired === 'CONFIRM_CART') {
+      chips.push({
+        label: '🛒 Yes, Add to Cart',
+        actionType: 'CONFIRM_CART'
+      });
+    }
+
+    if (chips.length > 0) {
+      this.voiceConsole.setActionChips(chips);
+    } else {
+      this.voiceConsole.clearActionChips();
+    }
 
     // Speak response
     this.speechEngine.speak(result.aiResponseText);
 
-    // Handle actions
+    // Handle authentication or real cart addition
     if (result.actionRequired === 'REQUIRE_AUTH') {
       this.stateMachine.transition('LOGIN_REQUIRED');
     } else if (result.actionRequired === 'CONFIRM_CART') {
       this.stateMachine.transition('ACTION_CONFIRMATION');
     } else if (result.actionRequired === 'CART_COMPLETED' && result.suggestedActionPayload) {
-      // Execute real cart addition (Section 22)
       await WooCommerceService.executeAddToCart(
         result.suggestedActionPayload.productId,
         result.suggestedActionPayload.variantId,
@@ -290,6 +396,9 @@ export class VoiceSessionController {
     const confirmationMsg = `You're logged in. Would you like me to add the ${pending.tablets}-tablet pack to your cart?`;
     this.voiceConsole.setGreeting(confirmationMsg, 'Awaiting your confirmation');
     this.voiceConsole.addTranscriptEntry('AI', confirmationMsg);
+    this.voiceConsole.setActionChips([
+      { label: '🛒 Yes, Add to Cart', actionType: 'CONFIRM_CART' }
+    ]);
     this.speechEngine.speak(confirmationMsg);
 
     this.stateMachine.transition('ACTION_CONFIRMATION');
@@ -307,6 +416,14 @@ export class VoiceSessionController {
     } else {
       this.handleCustomerUtterance(text);
     }
+  }
+
+  public setPageContext(context: {
+    pageType: 'home' | 'shop' | 'product' | 'content' | 'about' | 'blog';
+    slug?: string;
+    product?: any;
+  }): void {
+    this.router.setPageContext(context);
   }
 
   public getStateMachine(): VoiceStateMachine {

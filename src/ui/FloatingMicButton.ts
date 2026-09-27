@@ -1,7 +1,8 @@
 /**
  * FloatingMicButton
  * Implements Section 3 (ONLY ONE FLOATING MICROPHONE BUTTON)
- * and Section 33 (Prevent Double Connections).
+ * Circular glassmorphism design with soundwave animation, safe-area mobile positioning,
+ * and Section 33 (Double-connection prevention).
  */
 
 import { VoiceStateMachine, VoiceState } from '../state/VoiceStateMachine';
@@ -31,10 +32,27 @@ export class FloatingMicButton {
     wrapper.className = 'floating-mic-wrapper';
 
     wrapper.innerHTML = `
-      <button id="primaryFloatingMicBtn" class="floating-mic-btn idle" aria-label="Start voice assistant" title="Talk to AI Voice Assistant">
-        <span class="pulse-ring"></span>
-        <span id="floatingMicIcon" class="mic-icon">🎙️</span>
-        <span id="floatingMicLabel" class="mic-label">Talk to AI</span>
+      <button
+        id="primaryFloatingMicBtn"
+        class="floating-mic-btn idle"
+        aria-label="Start AI Voice Concierge"
+        title="Talk to AI Voice Concierge (English, French, German, Hindi)"
+      >
+        <div class="pulse-ring"></div>
+        <div class="mic-icon-circle">
+          <svg class="mic-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          <div class="sound-wave-bars">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <span id="floatingMicLabel" class="mic-label">Voice AI</span>
       </button>
     `;
 
@@ -42,7 +60,7 @@ export class FloatingMicButton {
     btn.addEventListener('click', () => {
       const now = performance.now();
       // Section 33: Prevent double connections from rapid clicking
-      if (now - this.lastClickTime < 500) {
+      if (now - this.lastClickTime < 450) {
         return;
       }
       this.lastClickTime = now;
@@ -65,9 +83,8 @@ export class FloatingMicButton {
 
   private updateStateUI(state: VoiceState): void {
     const btn = this.buttonElement.querySelector('#primaryFloatingMicBtn') as HTMLButtonElement;
-    const icon = this.buttonElement.querySelector('#floatingMicIcon');
     const label = this.buttonElement.querySelector('#floatingMicLabel');
-    if (!btn || !icon || !label) return;
+    if (!btn || !label) return;
 
     // Reset base classes
     btn.className = 'floating-mic-btn';
@@ -76,67 +93,58 @@ export class FloatingMicButton {
       case 'IDLE':
       case 'ENDED':
         btn.classList.add('idle');
-        icon.textContent = '🎙️';
-        label.textContent = 'Talk to AI';
-        btn.setAttribute('aria-label', 'Start voice assistant');
+        label.textContent = 'Voice AI';
+        btn.setAttribute('aria-label', 'Start AI voice concierge');
         break;
 
       case 'CONNECTING':
         btn.classList.add('connecting');
-        icon.textContent = '⏳';
         label.textContent = 'Connecting...';
-        btn.setAttribute('aria-label', 'Connecting to voice assistant');
+        btn.setAttribute('aria-label', 'Connecting to voice concierge');
         break;
 
       case 'READY':
       case 'LISTENING':
         btn.classList.add('listening');
-        icon.textContent = '🎙️';
         label.textContent = 'Listening...';
-        btn.setAttribute('aria-label', 'Listening for speech');
+        btn.setAttribute('aria-label', 'Listening for your voice');
         break;
 
       case 'USER_SPEAKING':
         btn.classList.add('user-speaking');
-        icon.textContent = '🗣️';
         label.textContent = 'Hearing you...';
-        btn.setAttribute('aria-label', 'User is speaking');
+        btn.setAttribute('aria-label', 'Hearing your voice');
         break;
 
       case 'TRANSCRIBING':
       case 'THINKING':
         btn.classList.add('thinking');
-        icon.textContent = '✨';
         label.textContent = 'Thinking...';
-        btn.setAttribute('aria-label', 'Assistant is thinking');
+        btn.setAttribute('aria-label', 'AI is processing response');
         break;
 
       case 'ASSISTANT_SPEAKING':
         btn.classList.add('speaking');
-        icon.textContent = '🔊';
         label.textContent = 'Speaking...';
-        btn.setAttribute('aria-label', 'Assistant is speaking');
+        btn.setAttribute('aria-label', 'AI concierge is speaking');
         break;
 
       case 'MUTED':
         btn.classList.add('muted');
-        icon.textContent = '🔇';
         label.textContent = 'Muted';
         btn.setAttribute('aria-label', 'Microphone is muted');
         break;
 
       case 'ERROR':
         btn.classList.add('error');
-        icon.textContent = '⚠️';
-        label.textContent = 'Retry';
-        btn.setAttribute('aria-label', 'Error occurred. Click to retry');
+        label.textContent = 'Retry Mic';
+        btn.setAttribute('aria-label', 'Microphone error. Click to retry');
         break;
 
       case 'LOGIN_REQUIRED':
       case 'ACTION_CONFIRMATION':
         btn.classList.add('action-needed');
-        icon.textContent = '🛒';
-        label.textContent = 'Action Needed';
+        label.textContent = 'Action Ready';
         break;
     }
   }

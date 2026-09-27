@@ -152,6 +152,64 @@ async function runVerification() {
     assert(sm.getState() === 'IDLE', 'State machine safely ends in IDLE');
   }
 
+  // 7. French Language Support
+  {
+    const router = new MultilingualIntentRouter();
+    const frRes = router.processUtterance("Pouvez-vous m'expliquer ce produit ?");
+    assert(
+      frRes.language === 'fr' &&
+      frRes.aiResponseText.includes('Certainement') &&
+      frRes.aiResponseText.includes('pharmaceutique'),
+      'French Support: Handled "Pouvez-vous m\'expliquer ce produit ?" with natural French explanation'
+    );
+  }
+
+  // 8. Bulk Order & Wholesale Detection
+  {
+    const router = new MultilingualIntentRouter();
+    const bulkRes = router.processUtterance('I want to make a bulk order of 200 units');
+    assert(
+      bulkRes.actionRequired === 'OPEN_EXPERT_CALL' &&
+      bulkRes.actionButtonLabel === 'Schedule an Expert Call' &&
+      bulkRes.aiResponseText.includes('wholesale'),
+      'Bulk Order Flow: Detected wholesale intent and offered "Schedule an Expert Call" CTA'
+    );
+  }
+
+  // 9. Expert Medical Handoff & Medical Disclaimer
+  {
+    const router = new MultilingualIntentRouter();
+    const medRes = router.processUtterance('Is Modalert safe with my heart condition and high blood pressure?');
+    assert(
+      medRes.actionRequired === 'OPEN_EXPERT_CALL' &&
+      medRes.actionButtonLabel === 'Talk to an Expert' &&
+      medRes.aiResponseText.includes('licensed physician'),
+      'Expert Handoff: Provided medical disclaimer and offered specialist connection'
+    );
+  }
+
+  // 10. Structured FAQ Knowledge Lookup
+  {
+    const router = new MultilingualIntentRouter();
+    const shipRes = router.processUtterance('Which European countries do you ship to?');
+    assert(
+      shipRes.aiResponseText.includes('European Union') &&
+      shipRes.aiResponseText.includes('3 to 7 business days'),
+      'FAQ Knowledge: Successfully retrieved delivery countries and shipping timeframe'
+    );
+  }
+
+  // 11. Clinical Product Comparison
+  {
+    const router = new MultilingualIntentRouter();
+    const compRes = router.processUtterance('What is the difference between Modafinil and Armodafinil?');
+    assert(
+      compRes.aiResponseText.includes('Modalert 200mg') &&
+      compRes.aiResponseText.includes('Waklert 150mg'),
+      'Product Comparison: Factual comparison between Modafinil and Armodafinil'
+    );
+  }
+
   console.log('\n=================================================================');
   console.log(`RESULTS: ${passed}/${total} TESTS PASSED (${((passed / total) * 100).toFixed(1)}%)`);
   console.log('=================================================================');

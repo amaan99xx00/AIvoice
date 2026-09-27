@@ -1,87 +1,133 @@
+import './styles/modaineurope.css';
 import './styles/premium-voice.css';
+
+import { HeaderComponent } from './components/Header';
+import { FooterComponent } from './components/Footer';
+import { CartDrawerComponent } from './components/CartDrawer';
+import { ExpertModalComponent } from './components/ExpertModal';
+
+import { AppRouter, RouteContext } from './router/Router';
+import { HomeView } from './views/HomeView';
+import { ShopView } from './views/ShopView';
+import { ProductDetailView } from './views/ProductDetailView';
+import { ContentView } from './views/ContentView';
+import { AboutView } from './views/AboutView';
+import { BlogView } from './views/BlogView';
+
 import { VoiceSessionController } from './ui/VoiceSessionController';
-import { WooCommerceService } from './services/wooCommerceService';
-import { AuthService } from './services/authService';
-import { STORE_PRODUCTS } from './services/storeCatalog';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Initialize Master Voice Session Controller
-  const controller = new VoiceSessionController();
+  const app = document.getElementById('app');
+  if (!app) return;
 
-  // 2. Render Storefront Products
-  const productsGrid = document.getElementById('productsGrid');
-  if (productsGrid) {
-    productsGrid.innerHTML = STORE_PRODUCTS.map((prod) => {
-      const variantTags = prod.variants
-        .map((v) => `<span class="variant-tag">${v.tablets} tablets - $${v.price.toFixed(2)}</span>`)
-        .join('');
+  // 1. Render App Shell
+  app.innerHTML = `
+    <!-- Top Header Bar with Astra Navigation (Exactly 5 items) -->
+    ${HeaderComponent.render()}
 
-      const mainVariant = prod.variants[0];
+    <!-- Dynamic Routed Main Content View -->
+    <main id="mainContent" class="main-content-viewport"></main>
 
-      return `
-        <div class="product-card" data-product-id="${prod.id}">
-          <img src="${prod.image}" alt="${prod.name}" class="product-image" loading="lazy" />
-          <div class="product-info">
-            <span class="product-category">${prod.category}</span>
-            <h3 class="product-title">${prod.name}</h3>
-            <p class="product-desc">${prod.description}</p>
-            <div class="product-variants-tags">
-              ${variantTags}
-            </div>
-            <div class="product-footer">
-              <span class="product-price">$${mainVariant.price.toFixed(2)}</span>
-              <button class="btn-add-cart" data-prod-id="${prod.id}" data-var-id="${mainVariant.id}">
-                Add to Cart
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
+    <!-- Global Footer -->
+    ${FooterComponent.render()}
 
-    // Attach manual add-to-cart clicks
-    document.querySelectorAll('.btn-add-cart').forEach((btn) => {
-      btn.addEventListener('click', async (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const prodId = target.getAttribute('data-prod-id');
-        const varId = target.getAttribute('data-var-id');
-        if (prodId && varId) {
-          if (!AuthService.isLoggedIn()) {
-            AuthService.login('customer@example.com');
-          }
-          await WooCommerceService.executeAddToCart(prodId, varId, 1);
+    <!-- Global Flyout Cart Drawer -->
+    ${CartDrawerComponent.render()}
+
+    <!-- Global Consultation & Wholesale Expert Modal -->
+    ${ExpertModalComponent.render()}
+  `;
+
+  // 2. Initialize Shell Interactive Listeners
+  HeaderComponent.initListeners();
+  CartDrawerComponent.initListeners();
+  FooterComponent.initListeners();
+  ExpertModalComponent.initListeners();
+
+  // 3. Initialize Master AI Voice Concierge
+  const voiceController = new VoiceSessionController();
+
+  // 4. View Rendering Handler for Router
+  const mainContentEl = document.getElementById('mainContent');
+  const router = AppRouter.getInstance();
+
+  const renderCurrentView = (ctx: RouteContext) => {
+    if (!mainContentEl) return;
+
+    switch (ctx.pageType) {
+      case 'home':
+        mainContentEl.innerHTML = HomeView.render();
+        HomeView.initListeners();
+        break;
+
+      case 'shop':
+        mainContentEl.innerHTML = ShopView.render(ctx.searchQuery, ctx.categoryFilter);
+        ShopView.initListeners();
+        break;
+
+      case 'product':
+        mainContentEl.innerHTML = ProductDetailView.render(ctx.slug || '');
+        ProductDetailView.initListeners();
+        break;
+
+      case 'content':
+        mainContentEl.innerHTML = ContentView.render();
+        ContentView.initListeners();
+        break;
+
+      case 'about':
+        mainContentEl.innerHTML = AboutView.render();
+        AboutView.initListeners();
+        break;
+
+      case 'blog':
+        mainContentEl.innerHTML = BlogView.render(ctx.searchQuery);
+        BlogView.initListeners();
+        break;
+
+      default:
+        mainContentEl.innerHTML = HomeView.render();
+        HomeView.initListeners();
+        break;
+    }
+
+    // Inform AI Voice Concierge of the page context (critical for single product context awareness)
+    voiceController.setPageContext(ctx);
+
+    // Attach quick simulator chips if present on page
+    document.querySelectorAll('.quick-test-chip').forEach((chip) => {
+      chip.addEventListener('click', (e) => {
+        const prompt = (e.currentTarget as HTMLElement).getAttribute('data-query');
+        if (prompt) {
+          voiceController.simulateUserUtterance(prompt);
         }
       });
     });
-  }
 
-  // 3. Subscribe to Cart updates
-  const cartCounter = document.getElementById('cartCounter');
-  WooCommerceService.subscribe((cart) => {
-    if (cartCounter) {
-      cartCounter.textContent = cart.totalItems.toString();
-    }
+    // Attach dynamic expert consultation triggers
+    document.querySelectorAll('[data-open-expert]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const type = (el.getAttribute('data-open-expert') as 'bulk' | 'product_advice' | 'shipping') || 'bulk';
+        ExpertModalComponent.open(type);
+      });
+    });
+  };
+
+  // Subscribe to route changes
+  router.on((context) => {
+    renderCurrentView(context);
   });
 
-  // 4. Subscribe to Auth updates
-  const authStatus = document.getElementById('authStatus');
-  AuthService.subscribe((user) => {
-    if (authStatus) {
-      if (user) {
-        authStatus.textContent = `👤 ${user.name}`;
-      } else {
-        authStatus.textContent = '👤 Guest (Sign in)';
-      }
-    }
-  });
+  // Trigger initial route parsing
+  router.init();
 
-  // 5. Connect Quick-test simulator chips if present
-  document.querySelectorAll('.quick-test-chip').forEach((chip) => {
-    chip.addEventListener('click', (e) => {
-      const prompt = (e.currentTarget as HTMLElement).getAttribute('data-query');
-      if (prompt) {
-        controller.simulateUserUtterance(prompt);
-      }
+  // Global expert button handlers on shell elements
+  document.querySelectorAll('[data-open-expert]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      const type = (el.getAttribute('data-open-expert') as 'bulk' | 'product_advice' | 'shipping') || 'bulk';
+      ExpertModalComponent.open(type);
     });
   });
 });

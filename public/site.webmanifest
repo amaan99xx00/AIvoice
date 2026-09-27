@@ -1,0 +1,15 @@
+{
+  "name": "Moda In Europe | Sleep Awakening Medications",
+  "short_name": "Moda In Europe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00194b",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
